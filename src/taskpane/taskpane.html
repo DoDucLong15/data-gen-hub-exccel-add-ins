@@ -12,22 +12,37 @@
         <h2>Excel Data Mapper</h2>
 
         <!-- Config Section -->
-        <h3>Config</h3>
-        <label>Name Format:</label>
-        <input type="text" id="nameFormat" placeholder="e.g., PGNV_?last_name_?mssv" />
-        <button onclick="addNameFormat()">Add</button>
+        <div class="section">
+            <h3>Cấu hình định dạng tên</h3>
+            <div class="input-group">
+                <label>Định dạng tên:</label>
+                <div class="input-with-button">
+                    <input type="text" id="nameFormat" placeholder="Ví dụ: PGNV_?last_name_?mssv" />
+                    <button onclick="addNameFormat()">Thêm</button>
+                </div>
+                <small class="helper-text">Hiện tại: <span id="nameFormatDisplay">Chưa có định dạng</span></small>
+            </div>
+        </div>
 
         <!-- Sheet Section -->
-        <h3>Sheets</h3>
-        <div id="sheetCards"></div>
-        <button onclick="addSheetCard()">+ Add New Sheet</button>
+        <div class="section">
+            <h3>Danh sách Sheet</h3>
+            <div id="sheetCards"></div>
+            <button class="add-sheet-btn" onclick="addSheetCard()">
+                <span>+</span> Thêm Sheet Mới
+            </button>
+        </div>
 
         <!-- Data Preview -->
-        <h3>Data Preview</h3>
-        <div id="spec-data"></div>
+        <div class="section">
+            <h3>Xem trước dữ liệu</h3>
+            <div id="spec-data"></div>
+        </div>
 
         <!-- Generate Button -->
-        <button onclick="generateSpecFile()">Generate Spec File</button>
+        <div class="section">
+            <button class="generate-btn" onclick="generateSpecFile()">Tạo File Đặc Tả</button>
+        </div>
     </div>
 </body>
 </html>

@@ -1,40 +1,318 @@
+:root {
+    --primary-color: #217346;      /* Màu xanh lá của Excel */
+    --primary-hover: #1a5c38;
+    --secondary-color: #f3f3f3;
+    --text-color: #252525;
+    --border-color: #e0e0e0;
+}
+
 #container {
     padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
 }
-h3 {
-    margin-top: 20px;
+
+h2, h3 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 12px;
+    margin-top: 25px;
+    font-weight: 600;
 }
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.sheet-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    padding-top: 40px;
+}
+
+.sheet-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.mapping-item {
+    background-color: white;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+}
+
+.mapping-item button {
+    background-color: #dc3545;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+#spec-data {
+    background-color: #1e1e1e;  /* Màu nền tối để dễ đọc */
+    color: #d4d4d4;  /* Màu chữ sáng */
+    border-radius: 6px;
+    padding: 20px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    border: 1px solid var(--border-color);
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre;  /* Giữ nguyên format */
+    tab-size: 2;  /* Kích thước tab */
+    -moz-tab-size: 2;
+    line-height: 1.5;  /* Khoảng cách dòng */
+}
+
+/* Tạo thanh cuộn đẹp hơn */
+#spec-data::-webkit-scrollbar {
+    width: 8px;
+}
+
+#spec-data::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-radius: 4px;
+}
+
+#spec-data::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+#spec-data::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Màu sắc cho các phần tử JSON */
+#spec-data .string { 
+    color: #9cdcfe; 
+}
+#spec-data .number { 
+    color: #b5cea8; 
+}
+#spec-data .boolean { 
+    color: #569cd6; 
+}
+#spec-data .null { 
+    color: #569cd6; 
+}
+#spec-data .key { 
+    color: #9cdcfe; 
+}
+
 label {
     display: block;
     margin: 5px 0;
 }
-input, textarea, select {
-    width: 100%;
-    margin-bottom: 10px;
-}
-button {
-    margin-right: 10px;
-}
-.sheet-card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-}
+
 .sheet-card .mapping-section {
-    margin-top: 10px;
-    padding: 10px;
-    border-top: 1px solid #ddd;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
 }
+
 .sheet-card .selected-cell {
     font-weight: bold;
 }
-#spec-data {
+
+.sheet-card .mapping-list {
     margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    max-height: 200px;
+    max-height: 150px;
     overflow-y: auto;
+}
+
+#nameFormatDisplay {
+    margin-top: 5px;
     font-family: monospace;
-    white-space: pre-wrap;
+    color: #555;
+}
+
+.input-with-button {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.input-with-button input {
+    margin-bottom: 0;
+}
+
+.input-with-button button {
+    min-width: 80px;
+    padding: 10px 20px;
+    align-self: stretch;
+    margin: 0;
+}
+
+.helper-text {
+    color: #666;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.success-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.add-sheet-btn {
+    width: auto;
+    margin: 25px auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    background-color: white;
+    color: var(--primary-color);
+    border: 2px dashed var(--primary-color);
+}
+
+.add-sheet-btn:hover {
+    background-color: #f0f9f4;
+    transform: translateY(-1px);
+}
+
+.generate-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    margin-top: 30px;
+    background-color: var(--primary-color);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Styling cho checkbox container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+/* Styling cho input checkbox */
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin: 0 8px 0 0;
+    cursor: pointer;
+    height: 16px;
+    width: 16px;
+}
+
+/* Styling cho label của checkbox */
+.checkbox-container label {
+    display: inline;
+    margin: 0;
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+/* Hover effect */
+.checkbox-container:hover {
+    opacity: 0.8;
+}
+
+.sheet-header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.sheet-header .input-group {
+    width: 100%;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    margin: 0;
+}
+
+.delete-btn:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Thêm style cho input group để đảm bảo layout đúng */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
