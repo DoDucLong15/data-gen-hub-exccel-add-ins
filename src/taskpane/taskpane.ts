@@ -135,61 +135,147 @@ function addSheetCard(): void {
   card.className = "sheet-card";
   card.setAttribute("data-sheet-index", index.toString());
 
-  card.innerHTML = `
-      <button class="delete-btn" id="deleteBtn-${index}" title="Xóa sheet">×</button>
-      <div class="sheet-header">
-          <div class="input-group">
-              <label>Sheet Name:</label>
-              <input type="text" id="sheetName-${index}" placeholder="Leave blank for active sheet" />
-          </div>
+  const cardTemplate = `
+    <button class="delete-btn" id="deleteBtn-${index}" title="Xóa sheet">×</button>
+    
+    <div class="sheet-header">
+      <div class="input-group">
+        <label>Sheet Name:</label>
+        <input 
+          type="text" 
+          id="sheetName-${index}" 
+          placeholder="Leave blank for active sheet" 
+        />
       </div>
-      <label>DB Table Name:</label>
-      <input type="text" id="dbTableName-${index}" placeholder="e.g., students" />
-      <div class="checkbox-container">
-          <input type="checkbox" id="visible-${index}" checked />
-          <label for="visible-${index}">Hiển thị sheet trong file kết quả</label>
+      <div class="input-group">
+        <label>DB Table Name:</label>
+        <input 
+          type="text" 
+          id="dbTableName-${index}" 
+          placeholder="e.g., students" 
+        />
       </div>
-      <button onclick="saveSheet(${index})">Save</button>
+    </div>
 
-      <div class="mapping-section">
-          <h4>Mapping</h4>
-          <p>Selected Cell: <span class="selected-cell">None</span></p>
+    <div class="checkbox-container">
+      <input type="checkbox" id="visible-${index}" checked />
+      <label for="visible-${index}">Hiển thị sheet trong file kết quả</label>
+    </div>
+
+    <div class="form-action">
+      <button onclick="saveSheet(${index})">Save</button>
+    </div>
+
+    <div class="mapping-section">
+      <h4>Mapping</h4>
+      <p>Selected Cell: <span class="selected-cell">None</span></p>
+      
+      <div class="form-row">
+        <div class="input-group">
           <label>Type:</label>
-          <select id="mappingType-${index}" onchange="toggleMappingInputs(${index})">
-              <option value="dbfield" selected>DB Field</option>
-              <option value="dbfields">DB Fields (Combined)</option>
-              <option value="const">Constant</option>
-              <option value="extrafield">Extra Field</option>
-              <option value="comment">Comment</option>
+          <select 
+            id="mappingType-${index}" 
+            onchange="toggleMappingInputs(${index})"
+          >
+            <option value="dbfield" selected>DB Field</option>
+            <option value="dbfields">DB Fields (Combined)</option>
+            <option value="const">Constant</option>
+            <option value="extrafield">Extra Field</option>
+            <option value="comment">Comment</option>
           </select>
-          <div id="mappingInputs-${index}">
-              <div id="dbfieldInput-${index}" style="display: block;">
-                  <label>DB Field:</label>
-                  <input type="text" id="dbfield-${index}" placeholder="e.g., mssv" />
-              </div>
-              <div id="dbfieldsInput-${index}" style="display: none;">
-                  <label>Format:</label>
-                  <input type="text" id="dbfieldsFormat-${index}" placeholder="e.g., {0} {1} {2}" />
-                  <label>Fields:</label>
-                  <input type="text" id="dbfieldsList-${index}" placeholder="e.g., last_name, middle_name, first_name" />
-              </div>
-              <div id="constInput-${index}" style="display: none;">
-                  <label>Value:</label>
-                  <textarea id="constValue-${index}" placeholder="e.g., 2024.2"></textarea>
-              </div>
-              <div id="extrafieldInput-${index}" style="display: none;">
-                  <label>Extra Field:</label>
-                  <input type="text" id="extrafield-${index}" placeholder="e.g., thesis_start_date" />
-              </div>
-              <div id="commentInput-${index}" style="display: none;">
-                  <label>Comment:</label>
-                  <input type="text" id="comment-${index}" placeholder="e.g., Học kì" />
-              </div>
-          </div>
-          <button onclick="addMapping(${index})">Add Mapping</button>
-          <div class="mapping-list" id="mappingList-${index}"></div>
+        </div>
       </div>
+      
+      <div id="mappingInputs-${index}">
+        <!-- DB Field Input -->
+        <div id="dbfieldInput-${index}" style="display: block;">
+          <div class="form-row">
+            <div class="input-group">
+              <label>DB Field:</label>
+              <input 
+                type="text" 
+                id="dbfield-${index}" 
+                placeholder="e.g., mssv" 
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- DB Fields Combined Input -->
+        <div id="dbfieldsInput-${index}" style="display: none;">
+          <div class="form-row">
+            <div class="input-group">
+              <label>Format:</label>
+              <input 
+                type="text" 
+                id="dbfieldsFormat-${index}" 
+                placeholder="e.g., {0} {1} {2}" 
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="input-group">
+              <label>Fields:</label>
+              <input 
+                type="text" 
+                id="dbfieldsList-${index}" 
+                placeholder="e.g., last_name, middle_name, first_name" 
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Constant Input -->
+        <div id="constInput-${index}" style="display: none;">
+          <div class="form-row">
+            <div class="input-group">
+              <label>Value:</label>
+              <textarea 
+                id="constValue-${index}" 
+                placeholder="e.g., 2024.2"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Extra Field Input -->
+        <div id="extrafieldInput-${index}" style="display: none;">
+          <div class="form-row">
+            <div class="input-group">
+              <label>Extra Field:</label>
+              <input 
+                type="text" 
+                id="extrafield-${index}" 
+                placeholder="e.g., thesis_start_date" 
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Comment Input -->
+        <div id="commentInput-${index}" style="display: none;">
+          <div class="form-row">
+            <div class="input-group">
+              <label>Comment:</label>
+              <input 
+                type="text" 
+                id="comment-${index}" 
+                placeholder="e.g., Học kì" 
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-action">
+        <button onclick="addMapping(${index})">Add Mapping</button>
+      </div>
+      
+      <div class="mapping-list" id="mappingList-${index}"></div>
+    </div>
   `;
+
+  card.innerHTML = cardTemplate;
 
   sheetCards.appendChild(card);
 
