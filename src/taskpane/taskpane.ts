@@ -17,6 +17,7 @@ interface Sheet {
   name: string;
   visible: boolean;
   mapping: Mapping;
+  rows?: string;
 }
 
 interface Config {
@@ -153,6 +154,14 @@ function addSheetCard(): void {
           type="text" 
           id="dbTableName-${index}" 
           placeholder="e.g., students" 
+        />
+      </div>
+      <div class="input-group">
+        <label>Row Range:</label>
+        <input 
+          type="text" 
+          id="rowRange-${index}" 
+          placeholder="e.g., 2:10 or *:* or 2:*" 
         />
       </div>
     </div>
@@ -318,6 +327,20 @@ function saveSheet(sheetIndex: number): void {
   const visibleInput: HTMLInputElement | null = document.getElementById(
     `visible-${sheetIndex}`
   ) as HTMLInputElement;
+  const rowRangeInput = document.getElementById(`rowRange-${sheetIndex}`) as HTMLInputElement;
+  const rowRange = rowRangeInput?.value.trim() ?? "";
+  
+  // Chỉ lưu row range nếu có giá trị và đúng format
+  if (rowRange && /^[0-9*]:[0-9*]$/.test(rowRange)) {
+    spec.sheets[sheetIndex].rows = rowRange;
+  } else if (rowRange) {
+    // Nếu có nhập nhưng sai format thì thông báo
+    alert("Row range phải có định dạng số:số hoặc *:* hoặc số:* hoặc *:số");
+    return;
+  } else {
+    // Nếu không nhập gì thì xóa trường row
+    delete spec.sheets[sheetIndex].rows;
+  }
 
   spec.sheets[sheetIndex].name = sheetNameInput?.value.trim() ?? "";
   spec.sheets[sheetIndex].mapping.dbtablename = dbTableNameInput?.value.trim() ?? "";
@@ -581,6 +604,7 @@ function updateSheetIndexes(): void {
       "sheetName",
       "dbTableName",
       "visible",
+      "rowRange",
       "mappingType",
       "mappingInputs",
       "dbfieldInput",
