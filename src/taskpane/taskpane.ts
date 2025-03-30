@@ -37,6 +37,74 @@ let spec: SpecFile = {
   errMessage: "",
 };
 
+// Định nghĩa các bảng và trường
+interface TableFields {
+  [tableName: string]: string[]; // Tên bảng -> danh sách các trường
+}
+
+// Khai báo dữ liệu mẫu
+const predefinedTables: TableFields = {
+  students: [
+    "student_class_name",
+    "supervisor",
+    "reviewer",
+    "phone",
+    "class_id",
+    "mssv",
+    "updated_at",
+    "middle_name",
+    "first_name",
+    "email",
+    "last_name",
+    "project_title",
+  ],
+  assignment_sheets: [
+    "semester",
+    "class_code",
+    "expected_products",
+    "thesis_start_date",
+    "student_sign_date",
+    "email",
+    "input_path",
+    "real_world_problem_solved",
+    "student_class_name",
+    "thesis_end_date",
+    "phone",
+    "school",
+    "mssv",
+    "supervisor_sign_date",
+    "project_title",
+    "technology_gained",
+    "full_name",
+    "supervisor",
+    "student_knowledge_gained",
+    "acquired_skills",
+  ],
+  guidance_reviews: [
+    "problem_difficulty_point",
+    "type_of_thesis",
+    "response_accuracy_point",
+    "topic_uniqueness_point",
+    "product_finalization_point",
+    "literature_review_point",
+    "workload_point",
+    "reward_point",
+    "layout_coherence_point",
+    "mssv",
+    "presentation_skills_point",
+    "general_feedback",
+    "solution_impact_point",
+    "project_title",
+    "full_name",
+    "supervisor",
+    "teacher_sign_date",
+    "conclusion",
+    "presentation_quality_point",
+    "content_validity_point",
+  ],
+  supervisory_comments: ["supervisor", "full_name", "mssv", "project_title"],
+};
+
 // Thêm biến để theo dõi số lượng sheet
 let currentSheetCount = 0;
 
@@ -150,11 +218,13 @@ function addSheetCard(): void {
       </div>
       <div class="input-group">
         <label>DB Table Name:</label>
-        <input 
-          type="text" 
+        <select 
           id="dbTableName-${index}" 
-          placeholder="e.g., students" 
-        />
+          onchange="updateFieldOptions(${index})"
+        >
+          <option value="">-- Select Table --</option>
+          ${generateTableOptions()}
+        </select>
       </div>
       <div class="input-group">
         <label>Row Range:</label>
@@ -201,11 +271,11 @@ function addSheetCard(): void {
           <div class="form-row">
             <div class="input-group">
               <label>DB Field:</label>
-              <input 
-                type="text" 
+              <select 
                 id="dbfield-${index}" 
-                placeholder="e.g., mssv" 
-              />
+              >
+                <option value="">-- Select Field --</option>
+              </select>
             </div>
           </div>
         </div>
@@ -225,10 +295,29 @@ function addSheetCard(): void {
           <div class="form-row">
             <div class="input-group">
               <label>Fields:</label>
+              <div class="multi-select-container">
+                <select 
+                  id="availableFields-${index}"
+                  multiple
+                  size="4"
+                >
+                  <!-- Options will be populated based on selected table -->
+                </select>
+                <div class="select-buttons">
+                  <button type="button" onclick="addSelectedField(${index})">→</button>
+                  <button type="button" onclick="removeSelectedField(${index})">←</button>
+                </div>
+                <select 
+                  id="selectedFields-${index}"
+                  multiple
+                  size="4"
+                >
+                  <!-- Selected fields will be added here -->
+                </select>
+              </div>
               <input 
-                type="text" 
+                type="hidden" 
                 id="dbfieldsList-${index}" 
-                placeholder="e.g., last_name, middle_name, first_name" 
               />
             </div>
           </div>
@@ -311,6 +400,87 @@ function addSheetCard(): void {
   updateMappingList(index);
 }
 
+// Thêm trường đã chọn
+function addSelectedField(sheetIndex: number): void {
+  const availableSelect = document.getElementById(
+    `availableFields-${sheetIndex}`
+  ) as HTMLSelectElement;
+  const selectedSelect = document.getElementById(
+    `selectedFields-${sheetIndex}`
+  ) as HTMLSelectElement;
+  const hiddenInput = document.getElementById(`dbfieldsList-${sheetIndex}`) as HTMLInputElement;
+
+  for (let i = 0; i < availableSelect.options.length; i++) {
+    if (availableSelect.options[i].selected) {
+      const option = document.createElement("option");
+      option.value = availableSelect.options[i].value;
+      option.textContent = availableSelect.options[i].textContent;
+      selectedSelect.appendChild(option);
+    }
+  }
+
+  // Cập nhật giá trị ẩn
+  updateHiddenFieldsList(sheetIndex);
+}
+
+// Xóa trường đã chọn
+function removeSelectedField(sheetIndex: number): void {
+  const selectedSelect = document.getElementById(
+    `selectedFields-${sheetIndex}`
+  ) as HTMLSelectElement;
+
+  for (let i = selectedSelect.options.length - 1; i >= 0; i--) {
+    if (selectedSelect.options[i].selected) {
+      selectedSelect.remove(i);
+    }
+  }
+
+  // Cập nhật giá trị ẩn
+  updateHiddenFieldsList(sheetIndex);
+}
+
+// Cập nhật danh sách trường ẩn
+function updateHiddenFieldsList(sheetIndex: number): void {
+  const selectedSelect = document.getElementById(
+    `selectedFields-${sheetIndex}`
+  ) as HTMLSelectElement;
+  const hiddenInput = document.getElementById(`dbfieldsList-${sheetIndex}`) as HTMLInputElement;
+
+  const selectedFields = Array.from(selectedSelect.options).map((option) => option.value);
+  hiddenInput.value = selectedFields.join(",");
+}
+
+// Tạo các tùy chọn cho dropdown bảng
+function generateTableOptions(): string {
+  return Object.keys(predefinedTables)
+    .map((table) => `<option value="${table}">${table}</option>`)
+    .join("");
+}
+
+// Cập nhật các tùy chọn trường dựa trên bảng đã chọn
+function updateFieldOptions(sheetIndex: number): void {
+  const dbTableSelect = document.getElementById(`dbTableName-${sheetIndex}`) as HTMLSelectElement;
+  const dbFieldSelect = document.getElementById(`dbfield-${sheetIndex}`) as HTMLSelectElement;
+  const dbFieldsListInput = document.getElementById(
+    `dbfieldsList-${sheetIndex}`
+  ) as HTMLInputElement;
+
+  const selectedTable = dbTableSelect.value;
+  const fields = predefinedTables[selectedTable] || [];
+
+  // Cập nhật trường đơn
+  dbFieldSelect.innerHTML = '<option value="">-- Select Field --</option>';
+  fields.forEach((field) => {
+    const option = document.createElement("option");
+    option.value = field;
+    option.textContent = field;
+    dbFieldSelect.appendChild(option);
+  });
+
+  // Lưu danh sách trường để sử dụng cho dbfields
+  dbFieldsListInput.setAttribute("data-available-fields", fields.join(","));
+}
+
 // Lưu sheetName và dbTableName cho sheet cụ thể
 function saveSheet(sheetIndex: number): void {
   if (sheetIndex >= spec.sheets.length) {
@@ -329,7 +499,7 @@ function saveSheet(sheetIndex: number): void {
   ) as HTMLInputElement;
   const rowRangeInput = document.getElementById(`rowRange-${sheetIndex}`) as HTMLInputElement;
   const rowRange = rowRangeInput?.value.trim() ?? "";
-  
+
   // Chỉ lưu row range nếu có giá trị và đúng format
   if (rowRange && /^[0-9*]:[0-9*]$/.test(rowRange)) {
     spec.sheets[sheetIndex].rows = rowRange;
@@ -360,24 +530,40 @@ function toggleMappingInputs(sheetIndex: number): void {
   const mappingTypeSelect: HTMLSelectElement | null = document.getElementById(
     `mappingType-${sheetIndex}`
   ) as HTMLSelectElement;
-  const mappingType: string = mappingTypeSelect?.value ?? "dbfield";
-  const inputs: string[] = [
-    "dbfieldInput",
-    "dbfieldsInput",
-    "constInput",
-    "extrafieldInput",
-    "commentInput",
-  ];
+  const mappingType = mappingTypeSelect?.value ?? "dbfield";
+  const inputs = ["dbfieldInput", "dbfieldsInput", "constInput", "extrafieldInput", "commentInput"];
 
-  inputs.forEach((id: string) => {
-    const element: HTMLElement | null = document.getElementById(`${id}-${sheetIndex}`);
+  inputs.forEach((id) => {
+    const element = document.getElementById(`${id}-${sheetIndex}`);
     if (element) element.style.display = "none";
   });
 
-  const activeInput: HTMLElement | null = document.getElementById(
-    `${mappingType}Input-${sheetIndex}`
-  );
+  const activeInput = document.getElementById(`${mappingType}Input-${sheetIndex}`);
   if (activeInput) activeInput.style.display = "block";
+
+  // Nếu chuyển sang dbfields, cập nhật các trường có sẵn
+  if (mappingType === "dbfields") {
+    updateAvailableFieldsForMultiSelect(sheetIndex);
+  }
+}
+
+// Hàm mới để cập nhật danh sách trường có sẵn cho multi-select
+function updateAvailableFieldsForMultiSelect(sheetIndex: number): void {
+  const dbTableSelect = document.getElementById(`dbTableName-${sheetIndex}`) as HTMLSelectElement;
+  const availableFieldsSelect = document.getElementById(
+    `availableFields-${sheetIndex}`
+  ) as HTMLSelectElement;
+
+  const selectedTable = dbTableSelect.value;
+  const fields = predefinedTables[selectedTable] || [];
+
+  availableFieldsSelect.innerHTML = "";
+  fields.forEach((field) => {
+    const option = document.createElement("option");
+    option.value = field;
+    option.textContent = field;
+    availableFieldsSelect.appendChild(option);
+  });
 }
 
 // Cập nhật danh sách mapping cho sheet cụ thể
@@ -416,15 +602,15 @@ async function addMapping(sheetIndex: number): Promise<void> {
       const sheetNameInput: HTMLInputElement | null = document.getElementById(
         `sheetName-${sheetIndex}`
       ) as HTMLInputElement;
-      const dbTableNameInput: HTMLInputElement | null = document.getElementById(
+      const dbTableNameSelect = document.getElementById(
         `dbTableName-${sheetIndex}`
-      ) as HTMLInputElement;
+      ) as HTMLSelectElement;
       const visibleInput: HTMLInputElement | null = document.getElementById(
         `visible-${sheetIndex}`
       ) as HTMLInputElement;
 
       spec.sheets[sheetIndex].name = sheetNameInput?.value.trim() ?? "";
-      spec.sheets[sheetIndex].mapping.dbtablename = dbTableNameInput?.value.trim() ?? "";
+      spec.sheets[sheetIndex].mapping.dbtablename = dbTableNameSelect?.value ?? "";
       spec.sheets[sheetIndex].visible = visibleInput?.checked ?? true;
 
       if (!spec.sheets[sheetIndex].mapping.dbtablename) {
@@ -440,21 +626,21 @@ async function addMapping(sheetIndex: number): Promise<void> {
 
       switch (mappingType) {
         case "dbfield":
-          const dbfieldInput: HTMLInputElement | null = document.getElementById(
+          const dbfieldSelect = document.getElementById(
             `dbfield-${sheetIndex}`
-          ) as HTMLInputElement;
-          const dbfield: string = dbfieldInput?.value.trim() ?? "";
+          ) as HTMLSelectElement;
+          const dbfield = dbfieldSelect?.value ?? "";
           if (dbfield) mapping.dbfield = dbfield;
           break;
         case "dbfields":
-          const formatInput: HTMLInputElement | null = document.getElementById(
+          const formatInput = document.getElementById(
             `dbfieldsFormat-${sheetIndex}`
           ) as HTMLInputElement;
-          const fieldsInput: HTMLInputElement | null = document.getElementById(
+          const fieldsInput = document.getElementById(
             `dbfieldsList-${sheetIndex}`
           ) as HTMLInputElement;
-          const format: string = formatInput?.value.trim() ?? "";
-          const fields: string[] = fieldsInput?.value.split(",").map((f: string) => f.trim()) ?? [];
+          const format = formatInput?.value.trim() ?? "";
+          const fields = fieldsInput?.value.split(",") ?? [];
           if (format && fields.length) mapping.dbfields = [format, ...fields];
           break;
         case "const":
@@ -650,3 +836,8 @@ function updateSheetIndexes(): void {
 (window as any).deleteMapping = deleteMapping;
 (window as any).generateSpecFile = generateSpecFile;
 (window as any).removeSheet = removeSheet;
+(window as any).updateFieldOptions = updateFieldOptions;
+(window as any).addSelectedField = addSelectedField;
+(window as any).removeSelectedField = removeSelectedField;
+(window as any).updateHiddenFieldsList = updateHiddenFieldsList;
+(window as any).updateAvailableFieldsForMultiSelect = updateAvailableFieldsForMultiSelect;

@@ -369,3 +369,27 @@ input:focus, textarea:focus, select:focus {
 .hidden {
     display: none;
 }
+
+/* CSS mới cho multi-select */
+.multi-select-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+  }
+  
+  .multi-select-container select {
+    width: 40%;
+    min-height: 100px;
+  }
+  
+  .select-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .select-buttons button {
+    width: 30px;
+    height: 30px;
+  }
